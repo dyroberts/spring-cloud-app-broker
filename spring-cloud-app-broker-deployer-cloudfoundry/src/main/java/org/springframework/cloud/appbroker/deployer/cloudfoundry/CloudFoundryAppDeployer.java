@@ -751,8 +751,7 @@ public class CloudFoundryAppDeployer implements AppDeployer, ResourceLoaderAware
 	@Override
 	public Mono<UpdateServiceInstanceResponse> updateServiceInstance(UpdateServiceInstanceRequest request) {
 		CloudFoundryOperations cloudFoundryOperations = getOperations(request.getProperties());
-		return rebindServiceInstanceIfNecessary(request, cloudFoundryOperations)
-			.then(updateServiceInstanceIfNecessary(request, cloudFoundryOperations));
+		return updateServiceInstanceIfNecessary(request, cloudFoundryOperations);
 	}
 
 
@@ -837,6 +836,7 @@ public class CloudFoundryAppDeployer implements AppDeployer, ResourceLoaderAware
 				.serviceInstanceName(serviceInstanceName)
 				.parameters(request.getParameters())
 				.build())
+			.then(rebindServiceInstanceIfNecessary(request, cloudFoundryOperations))
 			.then(Mono.just(UpdateServiceInstanceResponse.builder()
 				.name(serviceInstanceName)
 				.build()));
