@@ -830,16 +830,13 @@ public class CloudFoundryAppDeployer implements AppDeployer, ResourceLoaderAware
 		}
 
 		final String serviceInstanceName = request.getServiceInstanceName();
-
-		return cloudFoundryOperations.services().updateInstance(
-			org.cloudfoundry.operations.services.UpdateServiceInstanceRequest.builder()
-				.serviceInstanceName(serviceInstanceName)
-				.parameters(request.getParameters())
-				.build())
-			.then(rebindServiceInstanceIfNecessary(request, cloudFoundryOperations))
-			.then(Mono.just(UpdateServiceInstanceResponse.builder()
-				.name(serviceInstanceName)
-				.build()));
+		cloudFoundryOperations.services().updateInstance(
+				org.cloudfoundry.operations.services.UpdateServiceInstanceRequest.builder()
+						.serviceInstanceName(serviceInstanceName)
+						.parameters(request.getParameters())
+						.build()).block();
+		return rebindServiceInstanceIfNecessary(request, cloudFoundryOperations)
+				.then(Mono.just(UpdateServiceInstanceResponse.builder().name(serviceInstanceName).build()));
 	}
 
 	private CloudFoundryOperations getOperations(Map<String, String> properties) {
